@@ -56,7 +56,7 @@ test("real loader; submission-to-settlement; replaces previous result", async (t
   await h.emit("input");
   h.advance(2000); // Input preprocessing/compaction is included.
   await h.emit("before_agent_start", { messageType: "user" });
-  assert.equal(h.working, "Working... 2s");
+  assert.equal(h.working, "Working... 02s");
   h.advance(21000);
   assert.equal(h.working, "Working... 23s");
   await h.emit("agent_end");
@@ -75,10 +75,10 @@ test("real loader; submission-to-settlement; replaces previous result", async (t
   await h.emit("input");
   await h.emit("before_agent_start", { messageType: "user" });
   assert.equal(h.widget, undefined);
-  assert.equal(h.working, "Working... 0s");
+  assert.equal(h.working, "Working... 00s");
   h.advance(1000);
   await h.emit("agent_settled");
-  assert.deepEqual(h.widget, ["14:32:42 · 1s"]);
+  assert.deepEqual(h.widget, ["14:32:42 · 01s"]);
 });
 
 test("abort and shutdown/reload clear timers and UI", async (t) => {
@@ -87,7 +87,7 @@ test("abort and shutdown/reload clear timers and UI", async (t) => {
   await h.emit("before_agent_start", { messageType: "user" });
   h.advance(5000);
   await h.emit("agent_settled", { aborted: true });
-  assert.deepEqual(h.widget, ["14:32:10 · 5s"]);
+  assert.deepEqual(h.widget, ["14:32:10 · 05s"]);
   assert.equal(h.timers, 0);
   await h.emit("input");
   await h.emit("before_agent_start", { messageType: "user" });
@@ -108,21 +108,21 @@ test("handled input does not leak a timer or contaminate the next submission", a
   assert.equal(h.timers, 0);
   await h.emit("input");
   await h.emit("before_agent_start", { messageType: "user" });
-  assert.equal(h.working, "Working... 0s");
+  assert.equal(h.working, "Working... 00s");
   await h.emit("agent_settled");
-  assert.deepEqual(h.widget, ["14:33:05 · 0s"]);
+  assert.deepEqual(h.widget, ["14:33:05 · 00s"]);
 });
 
-test("custom run falls back to its own start and long durations stay in seconds", async (t) => {
+test("custom run falls back to its own start and formats minutes", async (t) => {
   const h = await harness(t);
   await h.emit("input");
   h.advance(5000);
   await h.emit("before_agent_start", { messageType: "custom" });
-  assert.equal(h.working, "Working... 0s");
+  assert.equal(h.working, "Working... 00s");
   h.advance(65000);
-  assert.equal(h.working, "Working... 65s");
+  assert.equal(h.working, "Working... 01m05s");
   await h.emit("agent_settled");
-  assert.deepEqual(h.widget, ["14:33:15 · 65s"]);
+  assert.deepEqual(h.widget, ["14:33:15 · 01m05s"]);
 });
 
 test("wall-clock adjustments do not change elapsed time", async (t) => {
@@ -132,7 +132,34 @@ test("wall-clock adjustments do not change elapsed time", async (t) => {
   h.advance(5000);
   t.mock.timers.setTime(new Date(2026, 0, 2, 13, 0, 0).getTime());
   await h.emit("agent_settled");
-  assert.deepEqual(h.widget, ["13:00:00 · 5s"]);
+  assert.deepEqual(h.widget, ["13:00:00 · 05s"]);
+});
+
+test("duration omits leading zero units and handles minute/hour boundaries", async (t) => {
+  const cases = [
+    [0, "00s"],
+    [59999, "59s"],
+    [60000, "01m00s"],
+    [700000, "11m40s"],
+    [3599999, "59m59s"],
+    [3600000, "01h00m00s"],
+    [3661000, "01h01m01s"],
+    [86400000, "24h00m00s"],
+    [360000000, "100h00m00s"],
+  ];
+  for (const [ms, expected] of cases) {
+    await t.test(`${ms}ms -> ${expected}`, async (child) => {
+      const h = await harness(child);
+      await h.emit("input");
+      await h.emit("before_agent_start", { messageType: "user" });
+      h.advance(ms);
+      assert.equal(h.working, `Working... ${expected}`);
+      await h.emit("agent_settled");
+      assert.equal(h.widget.length, 1);
+      assert.equal(h.widget[0].split(" · ")[1], expected);
+      assert.equal(h.timers, 0);
+    });
+  }
 });
 
 test("non-TUI modes have no UI or timer side effects", async (t) => {

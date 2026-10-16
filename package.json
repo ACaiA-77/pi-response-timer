@@ -1,7 +1,7 @@
 {
   "name": "pi-response-timer",
   "version": "0.1.0",
-  "description": "Live elapsed seconds and a minimal completion timestamp for Pi's terminal UI.",
+  "description": "Live elapsed time and a minimal completion timestamp for Pi's terminal UI.",
   "type": "module",
   "license": "MIT",
   "author": "ACaiA-77",

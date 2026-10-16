@@ -13,8 +13,14 @@ export default function responseTimer(pi: ExtensionAPI) {
 		timer = undefined;
 	}
 
-	function seconds() {
-		return Math.max(0, Math.floor((performance.now() - startedAt!) / 1000));
+	function duration() {
+		const total = Math.max(0, Math.floor((performance.now() - startedAt!) / 1000));
+		const hours = String(Math.floor(total / 3600)).padStart(2, "0");
+		const minutes = String(Math.floor(total / 60) % 60).padStart(2, "0");
+		const seconds = String(total % 60).padStart(2, "0");
+		if (total >= 3600) return `${hours}h${minutes}m${seconds}s`;
+		if (total >= 60) return `${minutes}m${seconds}s`;
+		return `${seconds}s`;
 	}
 
 	function reset(ctx: ExtensionContext) {
@@ -43,7 +49,7 @@ export default function responseTimer(pi: ExtensionAPI) {
 		startedAt = event.messageType === "user" ? (pendingStart ?? performance.now()) : performance.now();
 		pendingStart = undefined;
 		ctx.ui.setWidget(WIDGET, undefined);
-		const update = () => ctx.ui.setWorkingMessage(`Working... ${seconds()}s`);
+		const update = () => ctx.ui.setWorkingMessage(`Working... ${duration()}`);
 		update();
 		timer = setInterval(update, 1000);
 		timer.unref();
@@ -55,7 +61,7 @@ export default function responseTimer(pi: ExtensionAPI) {
 			pendingStart = undefined;
 			return;
 		}
-		const elapsed = seconds();
+		const elapsed = duration();
 		const end = new Date();
 		const time = [end.getHours(), end.getMinutes(), end.getSeconds()]
 			.map((value) => String(value).padStart(2, "0"))
@@ -65,6 +71,6 @@ export default function responseTimer(pi: ExtensionAPI) {
 		pendingStart = undefined;
 		if (ctx.mode !== "tui") return;
 		ctx.ui.setWorkingMessage();
-		ctx.ui.setWidget(WIDGET, [`${time} · ${elapsed}s`], { placement: "aboveEditor" });
+		ctx.ui.setWidget(WIDGET, [`${time} · ${elapsed}`], { placement: "aboveEditor" });
 	});
 }
