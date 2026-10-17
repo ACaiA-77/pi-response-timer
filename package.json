@@ -1,6 +1,6 @@
 {
   "name": "pi-response-timer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Live elapsed time and a minimal completion timestamp for Pi's terminal UI.",
   "type": "module",
   "license": "MIT",
@@ -11,10 +11,21 @@
   },
   "homepage": "https://github.com/ACaiA-77/pi-response-timer#readme",
   "bugs": "https://github.com/ACaiA-77/pi-response-timer/issues",
-  "keywords": ["pi-package", "pi-extension", "timer", "timestamp"],
-  "files": ["index.ts", "README.md", "LICENSE"],
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "timer",
+    "timestamp"
+  ],
+  "files": [
+    "index.ts",
+    "README.md",
+    "LICENSE"
+  ],
   "pi": {
-    "extensions": ["./index.ts"]
+    "extensions": [
+      "./index.ts"
+    ]
   },
   "engines": {
     "node": ">=22.19.0"

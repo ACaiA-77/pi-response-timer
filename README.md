@@ -19,20 +19,20 @@ Only the latest result is shown. It is cleared when the next agent run starts.
 Requires Node.js 22.19.0 or newer. Tested with Pi 1.3.0; older versions are not verified.
 
 ```sh
-pi install git:github.com/ACaiA-77/pi-response-timer@main
+pi install npm:pi-response-timer
 ```
 
-This explicitly installs the moving `main` branch with the compact hours/minutes/seconds duration format. The pinned `v0.1.0` release still displays total seconds.
-
-Run `/reload` in an existing Pi session, or restart Pi. There are no commands or settings to configure. This project is distributed through GitHub, not npm.
+Pin a version with `pi install npm:pi-response-timer@0.1.1` if you prefer. Run `/reload` in an existing Pi session, or restart Pi. There are no commands or settings to configure.
 
 If you already copied a `response-timer` extension into your personal extensions directory, disable that copy before enabling this package. Do not load both.
 
 To uninstall:
 
 ```sh
-pi remove git:github.com/ACaiA-77/pi-response-timer@main
+pi remove npm:pi-response-timer
 ```
+
+If you installed a pinned version, use its full source, for example `pi remove npm:pi-response-timer@0.1.1`.
 
 ## Timing and limits
 
@@ -65,21 +65,21 @@ MIT licensed. See [LICENSE](LICENSE).
 
 ### 安装与卸载
 
-需要 Node.js 22.19.0 或更新版本，已针对 Pi 1.3.0 测试，旧版尚未验证。当前通过 GitHub 分发，尚未发布到 npm。
+需要 Node.js 22.19.0 或更新版本，已针对 Pi 1.3.0 测试，旧版尚未验证。
 
 ```sh
-pi install git:github.com/ACaiA-77/pi-response-timer@main
+pi install npm:pi-response-timer
 ```
 
-此命令明确安装持续更新的 `main` 分支，包含新的时分秒格式。固定版本 `v0.1.0` 仍显示总秒数。
-
-在已有 Pi 会话中执行 `/reload`，或重启 Pi，即可启用，无需额外配置。如果之前手动安装过 `response-timer` 扩展，请先停用旧副本，避免重复加载。
+需要固定版本时使用 `pi install npm:pi-response-timer@0.1.1`。在已有 Pi 会话中执行 `/reload`，或重启 Pi，即可启用，无需额外配置。如果之前手动安装过 `response-timer` 扩展，请先停用旧副本，避免重复加载。
 
 卸载命令：
 
 ```sh
-pi remove git:github.com/ACaiA-77/pi-response-timer@main
+pi remove npm:pi-response-timer
 ```
+
+固定版本安装时，卸载源写成 `pi remove npm:pi-response-timer@0.1.1`。
 
 ### 计时范围
 
